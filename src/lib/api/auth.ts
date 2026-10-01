@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import { AuthResponse, LoginCredential, User } from "@/types/auth";
+import { AuthResponse, LoginCredential, User, RegisterCredential } from "@/types/auth";
 
 export const authApi = {
   /**
@@ -28,6 +28,11 @@ export const authApi = {
     await apiClient.post("/api/auth/logout");
   },
 
+  async register(credentials: RegisterCredential): Promise<AuthResponse> {
+    await this.getCsrfCookie();
+    const response = await apiClient.post<AuthResponse>("/api/auth/register", credentials);
+    return response.data;
+  },
   /**
    * Retrieves the currently authenticated user from Laravel.
    */

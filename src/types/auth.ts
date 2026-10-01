@@ -11,6 +11,12 @@ export interface LoginCredential {
   password: string;
 }
 
+export interface RegisterCredential{
+  name: string,
+  email: string, 
+  password: string,
+  password_confirmation: string,
+}
 export interface AuthResponse {
   user: User;
   message: string;

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import authApi from "@/lib/api/auth";
-import { ApiValidationError, LoginCredential, User } from "@/types/auth";
+import { ApiValidationError, LoginCredential, User, RegisterCredential } from "@/types/auth";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,7 +13,6 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]> | null>(null);
   const router = useRouter();
-
   // Check if session is already authenticated on mount
   const checkUser = useCallback(async () => {
     try {
@@ -60,6 +59,33 @@ export function useAuth() {
     }
   };
 
+  const register = async (credentials: RegisterCredential) => {
+    setIsSubmitting(true);
+    setError(null);
+    setValidationErrors(null);
+
+    try {
+      const response = await authApi.register(credentials);
+      setUser(response.user);
+      router.push("/login");
+      return { success: true, data: response };
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const errorData = err.response?.data as ApiValidationError | undefined;
+        if (err.response?.status === 422 && errorData?.errors) {
+          setValidationErrors(errorData.errors);
+          setError(errorData.message || "Invalid credentials provided.");
+        } else {
+          setError(errorData?.message || err.message || "Authentication failed.");
+        }
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+      return { success: false, error: err };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   // Logout handler
   const logout = async () => {
     setIsSubmitting(true);
@@ -83,5 +109,6 @@ export function useAuth() {
     login,
     logout,
     checkUser,
+    register,
   };
 }
