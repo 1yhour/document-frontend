@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { FileText, LogOut, ShieldCheck, Users } from "lucide-react";
+import { BarChart2, FileText, LogOut, ShieldCheck, Users } from "lucide-react";
 
 export function Navigation() {
   const { user, can, logout, isSubmitting } = useAuth();
@@ -16,6 +16,7 @@ export function Navigation() {
   }
 
   const isDocumentsActive = pathname.startsWith("/document");
+  const isDashboardActive = pathname.startsWith("/dashboard");
   const isAdminActive = pathname.startsWith("/admin");
 
   return (
@@ -38,6 +39,21 @@ export function Navigation() {
             >
               Documents
             </Link>
+
+            {/* Dashboard link gated by permission */}
+            {can("view own dashboard") && (
+              <Link
+                href="/dashboard"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  isDashboardActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                }`}
+              >
+                <BarChart2 className="h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            )}
 
             {/* Admin-only navigation link gated strictly by permission */}
             {can("view all users") && (
