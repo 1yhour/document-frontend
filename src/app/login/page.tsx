@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { getHomeRouteForUser } from "@/lib/auth-utils";
 
 export default function Login() {
   const router = useRouter();
@@ -23,10 +24,10 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated to their designated home route
   useEffect(() => {
     if (!isLoading && user) {
-      router.push("/");
+      router.replace(getHomeRouteForUser(user));
     }
   }, [user, isLoading, router]);
 

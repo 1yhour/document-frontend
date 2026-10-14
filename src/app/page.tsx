@@ -1,17 +1,29 @@
-"use client"
-import { useAuth } from "@/hooks/useAuth";
+"use client";
+
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { getHomeRouteForUser } from "@/lib/auth-utils";
+import { Loader2 } from "lucide-react";
+
 export default function Home() {
-  const {user,logout} = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        router.replace(getHomeRouteForUser(user));
+      } else {
+        router.replace("/login");
+      }
+    }
+  }, [user, isLoading, router]);
+
   return (
-    <div>
-      <h1>Hello World</h1>
-      <p>this is just for testing</p>
-      <p>{user?.name}</p>
-      <p>{user?.email}</p>
-      <Button variant={"destructive"} onClick={logout}>logout</Button>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-3">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="text-sm text-muted-foreground">Redirecting...</p>
     </div>
   );
 }

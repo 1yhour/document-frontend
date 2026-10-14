@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
+import { getHomeRouteForUser } from "@/lib/auth-utils";
 import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -15,13 +16,13 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [password_confirmation, setPasswordConfirmation] = useState("");
-  const { isSubmitting, error, validationErrors, register,user } = useAuth();
+  const { isSubmitting, isLoading, error, validationErrors, register, user } = useAuth();
   
   useEffect(() => {
-    if (!isSubmitting && user) {
-      router.push("/");
+    if (!isLoading && user) {
+      router.replace(getHomeRouteForUser(user));
     }
-  }, [user, isSubmitting, router]);
+  }, [user, isLoading, router]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
